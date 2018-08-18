@@ -1,0 +1,94 @@
+<!doctype html>
+<html data-framework="vue">
+  <head>
+    <meta charset="utf-8">
+    <title>LeanTodo • Vue.js</title>
+    <link rel="stylesheet" href="index.css">
+    <style>
+      [v-cloak] { display: none; }
+      .userinfo {
+        position: absolute;
+        bottom: -46px;
+        width: 100%;
+        font-size: 100%;
+      }
+      #login input {
+        padding: 16px;
+        text-align: center;
+      }
+      #login input:disabled {
+        color: #ddd;
+        cursor: not-allowed;
+      }
+      #login .control {
+        display: flex;
+      }
+      #login-button {
+        background-color: #fafafa;
+      }
+    </style>
+  </head>
+  <body>
+    <section class="todoapp">
+      <h1>校园云待办</h1>
+      <form action="#" id="login" v-on:submit.prevent="login" v-if="!user" v-cloak>
+        <input v-model="username" autofocus required class="new-todo" placeholder="用户名">
+        <input type="password" v-model="password" required class="new-todo" placeholder="密码">
+        <div class="control">
+          <input type="submit" value="登录" class="new-todo" id="login-button">
+        </div>
+      </form>
+      <template v-if="user" v-cloak>
+        <header class="header">
+          <input class="new-todo"
+            v-if="user"
+            autofocus autocomplete="off"
+            placeholder="点击这里新建，双击事项编辑"
+            v-model="newTodo"
+            @keyup.enter="addTodo">
+        </header>
+        <section class="main" v-show="todos.length">
+          <input class="toggle-all" type="checkbox" v-model="allDone">
+          <ul class="todo-list">
+            <li v-for="todo in filteredTodos"
+              class="todo"
+              :key="todo.objectId"
+              :class="{ completed: todo.done, editing: todo == editedTodo }">
+              <div class="view">
+                <input class="toggle" type="checkbox" v-model="todo.done" @change="doneEdit(todo)">
+                <label @dblclick="editTodo(todo)">{{ todo.content }}</label>
+                <button class="destroy" @click="removeTodo(todo)"></button>
+              </div>
+              <input class="edit" type="text"
+                v-model="todo.content"
+                v-todo-focus="todo == editedTodo"
+                @blur="doneEdit(todo)"
+                @keyup.enter="doneEdit(todo)"
+                @keyup.esc="cancelEdit(todo)">
+            </li>
+          </ul>
+        </section>
+        <footer class="footer" v-show="todos.length" v-cloak>
+          <span class="todo-count">
+            <strong>{{ remaining }}</strong> 条
+          </span>
+          <ul class="filters">
+            <li><a href="#/all" :class="{ selected: visibility == 'all' }">全部</a></li>
+            <li><a href="#/active" :class="{ selected: visibility == 'active' }">进行中</a></li>
+            <li><a href="#/completed" :class="{ selected: visibility == 'completed' }">已完成</a></li>
+          </ul>
+          <button class="clear-completed" @click="removeCompleted" v-show="todos.length > remaining">清除已完成</button>
+        </footer>
+        <p class="info userinfo">
+          已登录 {{user.username}} (<a @click='logout'>退出</a>)
+        </p>
+      </template>
+    </section>
+    <footer class="info">
+      <p>fork from <a href="https://vuejs.org/v2/examples/todomvc.html">Vue.js TodoMVC</a> / Powered by <a href="https://leancloud.cn">LeanCloud</a></p>
+    </footer>
+    <script src="https://unpkg.com/leancloud-storage@^3.0.0-beta.3/dist/av-live-query-min.js"></script>
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
